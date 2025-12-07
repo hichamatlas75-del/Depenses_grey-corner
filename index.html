@@ -3,125 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyse des Dépenses Mensuelles (Courbes)</title>
+    <title>Visualisation des Dépenses Mensuelles - Chart.js</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        h1, h2 {
-            color: #0056b3;
-            border-bottom: 2px solid #0056b3;
-            padding-bottom: 5px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #0056b3;
-            color: white;
-            text-transform: uppercase;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .total-row td {
-            font-weight: bold;
-            background-color: #ffeb3b !important; /* Couleur Jaune (Case Jaune) */
-            color: #333;
-        }
-        .note {
-            background-color: #e6f7ff;
-            border-left: 5px solid #0056b3;
-            padding: 15px;
-            margin-top: 20px;
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f7f7f7; }
+        h1, h2 { text-align: center; color: #0056b3; }
+        .chart-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
 
-    <h1>📊 Données de Dépenses Mensuelles pour Courbes</h1>
-    <p>Ces tableaux contiennent les données extraites de vos fichiers CSV, basées sur la valeur de la "case jaune" (Total des Dépenses Réelles) pour chaque mois.</p>
-
-    <h2>1. Total des Dépenses Mensuelles Réelles (Courbe Principale) 📈</h2>
-    <table>
-        <thead>
-            <tr class="total-row">
-                <th>Mois</th>
-                <th>Total des Dépenses Réelles (€/DH)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>Août 2024</td><td>171 000,00</td></tr>
-            <tr><td>Septembre 2024</td><td>172 000,00</td></tr>
-            <tr><td>Octobre 2024</td><td>173 500,00</td></tr>
-            <tr><td>Novembre 2024</td><td>177 500,00</td></tr>
-            <tr><td>Décembre 2024</td><td>178 950,50</td></tr>
-            <tr><td>Janvier 2025</td><td>178 952,00</td></tr>
-            <tr><td>Février 2025</td><td>178 000,00</td></tr>
-            <tr><td>Mars 2025</td><td>179 450,50</td></tr>
-            <tr><td>Avril 2025</td><td>178 729,50</td></tr>
-            <tr><td>Mai 2025</td><td>182 100,50</td></tr>
-            <tr><td>Juin 2025</td><td>183 951,00</td></tr>
-            <tr><td>Juillet 2025</td><td>184 103,50</td></tr>
-            <tr><td>Août 2025</td><td>184 750,00</td></tr>
-            <tr><td>Septembre 2025</td><td>185 365,00</td></tr>
-            <tr><td>Octobre 2025</td><td>185 410,00</td></tr>
-            <tr class="total-row"><td>Novembre 2025</td><td>175 528,00</td></tr>
-        </tbody>
-    </table>
-
-    ---
-
-    <h2>2. Dépenses par Catégorie Principale (Courbes Détaillées) 📉</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Mois</th>
-                <th>LAAMARTI</th>
-                <th>POULET</th>
-                <th>POISSON/FRITES</th>
-                <th>LÉGUMES</th>
-                <th>FRUITS</th>
-                <th>PERSONNEL</th>
-                <th>EMBALLAGES</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>Août 2024</td><td>12 900,00</td><td>19 500,00</td><td>9 200,00</td><td>10 200,00</td><td>10 000,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Septembre 2024</td><td>13 100,00</td><td>19 900,00</td><td>9 300,00</td><td>10 300,00</td><td>10 100,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Octobre 2024</td><td>13 300,00</td><td>20 300,00</td><td>9 400,00</td><td>10 400,00</td><td>10 200,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Novembre 2024</td><td>13 500,00</td><td>20 700,00</td><td>9 500,00</td><td>10 500,00</td><td>10 300,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Décembre 2024</td><td>13 700,00</td><td>21 100,00</td><td>9 600,00</td><td>10 600,00</td><td>10 400,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Janvier 2025</td><td>13 900,00</td><td>21 500,00</td><td>9 700,00</td><td>10 700,00</td><td>10 500,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Février 2025</td><td>14 100,00</td><td>21 900,00</td><td>9 800,00</td><td>10 800,00</td><td>10 600,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Mars 2025</td><td>14 300,00</td><td>22 300,00</td><td>9 900,00</td><td>10 900,00</td><td>10 700,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Avril 2025</td><td>14 500,00</td><td>22 700,00</td><td>10 000,00</td><td>11 000,00</td><td>10 800,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Mai 2025</td><td>15 000,00</td><td>23 100,00</td><td>10 100,00</td><td>11 200,00</td><td>11 100,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Juin 2025</td><td>15 200,00</td><td>23 500,00</td><td>10 200,00</td><td>11 400,00</td><td>11 300,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Juillet 2025</td><td>15 480,00</td><td>23 990,00</td><td>10 400,00</td><td>11 600,00</td><td>11 500,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Août 2025</td><td>15 678,00</td><td>24 120,00</td><td>10 500,00</td><td>11 800,00</td><td>11 700,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Septembre 2025</td><td>15 890,00</td><td>24 560,00</td><td>10 540,00</td><td>12 010,00</td><td>11 880,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Octobre 2025</td><td>15 545,00</td><td>24 987,00</td><td>10 980,00</td><td>12 210,00</td><td>11 980,00</td><td>20 000,00</td><td>7 500,00</td></tr>
-            <tr><td>Novembre 2025</td><td>16 014,50</td><td>25 385,00</td><td>11 021,00</td><td>12 581,50</td><td>12 110,50</td><td>20 000,00</td><td>7 500,00</td></tr>
-        </tbody>
-    </table>
-
-    <div class="note">
-        <h3>💡 Prochaine étape : Créer le graphique</h3>
-        Pour transformer ces données en courbes, vous pouvez utiliser un outil en ligne ou une librairie de graphique (comme <a href="https://www.chartjs.org/" target="_blank">Chart.js</a> ou Google Charts). Vous n'aurez qu'à copier/coller les données de ces tableaux directement dans le format requis par l'outil de votre choix pour visualiser l'évolution de vos dépenses mois par mois.
+    <h1>Évolution des Dépenses Mensuelles (Corrigées)</h1>
+    
+    <div class="chart-container">
+        <h2>1. Total des Dépenses Réelles (Graphique en Barres) 💰</h2>
+        <canvas id="graphiqueTotal"></canvas>
     </div>
 
+    <div class="chart-container">
+        <h2>2. Dépenses par Catégorie (Graphique en Lignes) 📊</h2>
+        <canvas id="graphiqueCategories"></canvas>
+    </div>
+
+    <script>
+        // ====================================================================
+        // DONNÉES JSON (Intégrées directement)
+        // ====================================================================
+
+        // 1. JSON pour la Courbe Principale (Total des Dépenses)
+        const TOTAL_DEPENSES_MENSUELLES_JSON = [
+            {"mois": "Août 2024", "total": 171000.00},
+            {"mois": "Septembre 2024", "total": 172000.00},
+            {"mois": "Octobre 2024", "total": 173500.00},
+            {"mois": "Novembre 2024", "total": 177500.00},
+            {"mois": "Décembre 2024", "total": 178950.50},
+            {"mois": "Janvier 2025", "total": 178952.00},
+            {"mois": "Février 2025", "total": 178000.00},
+            {"mois": "Mars 2025", "total": 179450.50},
+            {"mois": "Avril 2025", "total": 178729.50},
+            {"mois": "Mai 2025", "total": 182100.50},
+            {"mois": "Juin 2025", "total": 183951.00},
+            {"mois": "Juillet 2025", "total": 184103.50},
+            {"mois": "Août 2025", "total": 184750.00},
+            {"mois": "Septembre 2025", "total": 185365.00},
+            {"mois": "Octobre 2025", "total": 185410.00},
+            {"mois": "Novembre 2025", "total": 175528.00}
+        ];
+
+        // 2. JSON pour les Courbes Détaillées (Dépenses par Catégorie)
+        const DEPENSES_PAR_CATEGORIES_JSON = [
+            {"mois": "Août 2024", "LAAMARTI": 12900.00, "POULET": 19500.00, "POISSON/FRITES": 9200.00, "LÉGUMES": 10200.00, "FRUITS": 10000.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Septembre 2024", "LAAMARTI": 13100.00, "POULET": 19900.00, "POISSON/FRITES": 9300.00, "LÉGUMES": 10300.00, "FRUITS": 10100.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Octobre 2024", "LAAMARTI": 13300.00, "POULET": 20300.00, "POISSON/FRITES": 9400.00, "LÉGUMES": 10400.00, "FRUITS": 10200.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Novembre 2024", "LAAMARTI": 13500.00, "POULET": 20700.00, "POISSON/FRITES": 9500.00, "LÉGUMES": 10500.00, "FRUITS": 10300.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Décembre 2024", "LAAMARTI": 13700.00, "POULET": 21100.00, "POISSON/FRITES": 9600.00, "LÉGUMES": 10600.00, "FRUITS": 10400.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Janvier 2025", "LAAMARTI": 13900.00, "POULET": 21500.00, "POISSON/FRITES": 9700.00, "LÉGUMES": 10700.00, "FRUITS": 10500.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Février 2025", "LAAMARTI": 14100.00, "POULET": 21900.00, "POISSON/FRITES": 9800.00, "LÉGUMES": 10800.00, "FRUITS": 10600.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Mars 2025", "LAAMARTI": 14300.00, "POULET": 22300.00, "POISSON/FRITES": 9900.00, "LÉGUMES": 10900.00, "FRUITS": 10700.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Avril 2025", "LAAMARTI": 14500.00, "POULET": 22700.00, "POISSON/FRITES": 10000.00, "LÉGUMES": 11000.00, "FRUITS": 10800.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Mai 2025", "LAAMARTI": 15000.00, "POULET": 23100.00, "POISSON/FRITES": 10100.00, "LÉGUMES": 11200.00, "FRUITS": 11100.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Juin 2025", "LAAMARTI": 15200.00, "POULET": 23500.00, "POISSON/FRITES": 10200.00, "LÉGUMES": 11400.00, "FRUITS": 11300.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Juillet 2025", "LAAMARTI": 15480.00, "POULET": 23990.00, "POISSON/FRITES": 10400.00, "LÉGUMES": 11600.00, "FRUITS": 11500.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Août 2025", "LAAMARTI": 15678.00, "POULET": 24120.00, "POISSON/FRITES": 10500.00, "LÉGUMES": 11800.00, "FRUITS": 11700.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Septembre 2025", "LAAMARTI": 15890.00, "POULET": 24560.00, "POISSON/FRITES": 10540.00, "LÉGUMES": 12010.00, "FRUITS": 11880.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Octobre 2025", "LAAMARTI": 15545.00, "POULET": 24987.00, "POISSON/FRITES": 10980.00, "LÉGUMES": 12210.00, "FRUITS": 11980.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
+            {"mois": "Novembre 2025", "LAAMARTI": 16014.50, "POULET": 25385.00, "POISSON/FRITES": 11021.00, "LÉGUMES": 12581.50, "FRUITS": 12110.50, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00}
+        ];
+
+
+        // ====================================================================
+        // LOGIQUE GRAPHIQUE 1 : Total des Dépenses (Barres)
+        // ====================================================================
+        
+        function createTotalExpensesChart() {
+            const dataJson = TOTAL_DEPENSES_MENSUELLES_JSON;
+            const labels = dataJson.map(item => item.mois.replace(' ', '\n')); // Nouvelle ligne pour les mois
+            const dataValues = dataJson.map(item => item.total);
+
+            const ctx = document.getElementById('graphiqueTotal').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total des Dépenses (€/DH)',
+                        data: dataValues,
+                        backgroundColor: dataValues.map(val => (val === 175528.00 ? 'rgba(255, 99, 132, 0.8)' : 'rgba(75, 192, 192, 0.7)')),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: { display: true, text: 'Montant (€/DH)' }
+                        },
+                        x: {
+                             title: { display: true, text: 'Mois' }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Total des Dépenses Mensuelles (Mois de Novembre 2025 mis en évidence)'
+                        }
+                    }
+                }
+            });
+        }
+
+        // ====================================================================
+        // LOGIQUE GRAPHIQUE 2 : Dépenses par Catégorie (Lignes)
+        // ====================================================================
+
+        function createCategoryExpensesChart() {
+            const categoryJson = DEPENSES_PAR_CATEGORIES_JSON;
+            
+            // On récupère toutes les clés de dépenses (sauf 'mois')
+            const categories = Object.keys(categoryJson[0]).filter(key => key !== 'mois');
+            const categoryLabels = categoryJson.map(item => item.mois.replace(' ', '\n'));
+
+            // Couleurs pour chaque ligne
+            const colors = {
+                'LAAMARTI': '#FF6384', 'POULET': '#FF9F40', 'POISSON/FRITES': '#4BC0C0', 
+                'LÉGUMES': '#9966FF', 'FRUITS': '#36A2EB', 'PERSONNEL': '#28a745', 'EMBALLAGES': '#6c757d'
+            };
+
+            const datasets = categories.map(cat => ({
+                label: cat,
+                data: categoryJson.map(item => item[cat]),
+                borderColor: colors[cat],
+                backgroundColor: colors[cat],
+                fill: false,
+                tension: 0.3
+            }));
+
+            const ctx2 = document.getElementById('graphiqueCategories').getContext('2d');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: categoryLabels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: { display: true, text: 'Montant (€/DH)' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Mois' }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Évolution des Dépenses par Catégorie'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Exécuter les fonctions de création de graphiques au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            createTotalExpensesChart();
+            createCategoryExpensesChart();
+        });
+
+    </script>
 </body>
 </html>
