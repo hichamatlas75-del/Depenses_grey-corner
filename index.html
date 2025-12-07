@@ -3,44 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualisation des Dépenses Mensuelles - Chart.js</title>
+    <title>Visualisation des Dépenses - Chart.js</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f7f7f7; }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f7f7f7; }
         h1, h2 { text-align: center; color: #0056b3; }
+        
         .chart-container {
-            width: 90%;
+            width: 95%;
             max-width: 1000px;
-            margin: 40px auto;
+            margin: 20px auto;
             background-color: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            /* Hauteur minimale pour éviter l'écrasement sur mobile */
+            min-height: 300px; 
+            position: relative;
+        }
+
+        /* --- STYLE POUR L'ALERTE MOBILE --- */
+        .landscape-alert {
+            display: none; /* Caché par défaut */
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Afficher l'alerte uniquement sur les écrans < 768px (mobiles) et en mode portrait */
+        @media only screen and (max-width: 768px) and (orientation: portrait) {
+            .landscape-alert {
+                display: block;
+                animation: pulse 2s infinite;
+            }
+        }
+
+        /* Petite animation pour attirer l'attention */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
-    <h1>Évolution des Dépenses Mensuelles (Mettre telephone mode paysage pourvoir les graphiques)</h1>
+    <!-- MESSAGE D'ALERTE MOBILE -->
+    <div class="landscape-alert">
+        📱🔄 Pour mieux voir les graphiques, veuillez tourner votre appareil en mode paysage !
+    </div>
+
+    <h1>Évolution des Dépenses</h1>
     
     <div class="chart-container">
-        <h2>1. Total des Dépenses Réelles (Graphique en Barres) 💰</h2>
-        <canvas id="graphiqueTotal"></canvas>
+        <h2>1. Total des Dépenses 💰</h2>
+        <!-- Ajout d'une hauteur relative pour mobile -->
+        <div style="position: relative; height: 60vh; max-height: 400px;">
+            <canvas id="graphiqueTotal"></canvas>
+        </div>
     </div>
 
     <div class="chart-container">
-        <h2>2. Dépenses par Catégorie (Graphique en Lignes) 📊</h2>
-        <canvas id="graphiqueCategories"></canvas>
+        <h2>2. Dépenses par Catégorie 📊</h2>
+        <div style="position: relative; height: 60vh; max-height: 400px;">
+            <canvas id="graphiqueCategories"></canvas>
+        </div>
     </div>
 
     <script>
         // ====================================================================
-        // DONNÉES JSON (Intégrées directement)
+        // DONNÉES JSON 
         // ====================================================================
 
-        // 1. JSON pour la Courbe Principale (Total des Dépenses)
         const TOTAL_DEPENSES_MENSUELLES_JSON = [
             {"mois": "Août 2024", "total": 171000.00},
             {"mois": "Septembre 2024", "total": 172000.00},
@@ -60,8 +103,6 @@
             {"mois": "Novembre 2025", "total": 175528.00}
         ];
 
-        // 2. JSON pour les Courbes Détaillées (Dépenses par Catégorie)
-        // CORRECTIONS: Ajout de la virgule manquante ligne 1, correction des fautes de frappe "ABDEILAH" et espaces
         const DEPENSES_PAR_CATEGORIES_JSON = [
             {"mois": "Août 2024", "ABDELILAH": 35816.00, "LAAMARTI": 12900.00, "POULET": 19500.00, "POISSON/FRITES": 9200.00, "LÉGUMES": 10200.00, "FRUITS": 10000.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
             {"mois": "Septembre 2024", "ABDELILAH": 26224.00,"LAAMARTI": 13100.00, "POULET": 19900.00, "POISSON/FRITES": 9300.00, "LÉGUMES": 10300.00, "FRUITS": 10100.00, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00},
@@ -81,14 +122,22 @@
             {"mois": "Novembre 2025", "ABDELILAH": 32887.00,"LAAMARTI": 16014.50, "POULET": 25385.00, "POISSON/FRITES": 11021.00, "LÉGUMES": 12581.50, "FRUITS": 12110.50, "PERSONNEL": 20000.00, "EMBALLAGES": 7500.00}
         ];
 
+        // ====================================================================
+        // CONFIGURATION
+        // ====================================================================
 
-        // ====================================================================
-        // LOGIQUE GRAPHIQUE 1 : Total des Dépenses (Barres)
-        // ====================================================================
+        // Options communes pour que le graphique s'adapte au conteneur HTML
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false, // Permet au graphique de remplir la hauteur définie dans le CSS
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        };
         
         function createTotalExpensesChart() {
             const dataJson = TOTAL_DEPENSES_MENSUELLES_JSON;
-            const labels = dataJson.map(item => item.mois.replace(' ', '\n')); // Nouvelle ligne pour les mois
+            const labels = dataJson.map(item => item.mois.replace(' ', '\n')); 
             const dataValues = dataJson.map(item => item.total);
 
             const ctx = document.getElementById('graphiqueTotal').getContext('2d');
@@ -97,7 +146,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Total des Dépenses (€/DH)',
+                        label: 'Total',
                         data: dataValues,
                         backgroundColor: dataValues.map(val => (val === 175528.00 ? 'rgba(255, 99, 132, 0.8)' : 'rgba(75, 192, 192, 0.7)')),
                         borderColor: 'rgba(75, 192, 192, 1)',
@@ -105,51 +154,33 @@
                     }]
                 },
                 options: {
-                    responsive: true,
+                    ...commonOptions,
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            title: { display: true, text: 'Montant (€/DH)' }
-                        },
-                        x: {
-                             title: { display: true, text: 'Mois' }
-                        }
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Total des Dépenses Mensuelles (Mois de Novembre 2025 mis en évidence)'
-                        }
+                        y: { beginAtZero: false }
                     }
                 }
             });
         }
 
-        // ====================================================================
-        // LOGIQUE GRAPHIQUE 2 : Dépenses par Catégorie (Lignes)
-        // ====================================================================
-
         function createCategoryExpensesChart() {
             const categoryJson = DEPENSES_PAR_CATEGORIES_JSON;
-            
-            // On récupère toutes les clés de dépenses (sauf 'mois')
             const categories = Object.keys(categoryJson[0]).filter(key => key !== 'mois');
             const categoryLabels = categoryJson.map(item => item.mois.replace(' ', '\n'));
 
-            // Couleurs pour chaque ligne (Ajout de ABDELILAH)
             const colors = {
-                'ABDELILAH': '#007bff', // Bleu vif ajouté
-                'LAAMARTI': '#FF6384', 'POULET': '#FF9F40', 'POISSON/FRITES': '#4BC0C0', 
-                'LÉGUMES': '#9966FF', 'FRUITS': '#36A2EB', 'PERSONNEL': '#28a745', 'EMBALLAGES': '#6c757d'
+                'ABDELILAH': '#007bff', 'LAAMARTI': '#FF6384', 'POULET': '#FF9F40', 
+                'POISSON/FRITES': '#4BC0C0', 'LÉGUMES': '#9966FF', 'FRUITS': '#36A2EB', 
+                'PERSONNEL': '#28a745', 'EMBALLAGES': '#6c757d'
             };
 
             const datasets = categories.map(cat => ({
                 label: cat,
                 data: categoryJson.map(item => item[cat]),
-                borderColor: colors[cat] || '#000000', // Noir par défaut si couleur manquante
-                backgroundColor: colors[cat] || '#000000',
+                borderColor: colors[cat] || '#333',
+                backgroundColor: colors[cat] || '#333',
                 fill: false,
-                tension: 0.3
+                tension: 0.3,
+                pointRadius: 2 
             }));
 
             const ctx2 = document.getElementById('graphiqueCategories').getContext('2d');
@@ -160,27 +191,14 @@
                     datasets: datasets
                 },
                 options: {
-                    responsive: true,
+                    ...commonOptions,
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            title: { display: true, text: 'Montant (€/DH)' }
-                        },
-                        x: {
-                            title: { display: true, text: 'Mois' }
-                        }
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Évolution des Dépenses par Catégorie'
-                        }
+                        y: { beginAtZero: false }
                     }
                 }
             });
         }
 
-        // Exécuter les fonctions de création de graphiques au chargement de la page
         document.addEventListener('DOMContentLoaded', () => {
             createTotalExpensesChart();
             createCategoryExpensesChart();
