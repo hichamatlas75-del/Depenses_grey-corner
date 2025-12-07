@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse des Dépenses - Grey Corner</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        /* Styles de base */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        /* En-tête */
+        header {
+            background-color: #495057; /* Dark Grey/Slate */
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 30px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            letter-spacing: 1px;
+        }
+        header p {
+            margin-top: 5px;
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+        /* Sections */
+        h2 {
+            color: #212529;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            font-weight: 600;
+        }
+        .chart-container {
+            width: 100%;
+            height: 450px;
+            margin-bottom: 40px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+        }
+        /* Tableau */
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: right;
+        }
+        th {
+            background-color: #6c757d; /* Medium Grey */
+            color: white;
+            text-align: left;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 700;
+        }
+        td {
+            border-bottom: 1px solid #e9ecef;
+            font-variant-numeric: tabular-nums;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e2e6ea;
+        }
+        table thead tr:first-child th:first-child { border-top-left-radius: 6px; }
+        table thead tr:first-child th:last-child { border-top-right-radius: 6px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Grey Corner - Tableau de Bord des Dépenses</h1>
+            <p>Analyse des dépenses du café/restaurant de 2024-08 à 2025-12</p>
+        </header>
+
+        <section>
+            <h2>Évolution des Dépenses Totales (MAD)</h2>
+            <div class="chart-container">
+                <canvas id="totalExpensesChart"></canvas>
+            </div>
+        </section>
+
+        <section>
+            <h2>Dépenses de Café (MAD)</h2>
+            <p>Cette métrique suit l'évolution mensuelle de vos dépenses spécifiques en café (CAFE, NESPRESSO, etc.).</p>
+            <div class="chart-container">
+                <canvas id="cafeExpensesChart"></canvas>
+            </div>
+        </section>
+
+        <section>
+            <h2>Synthèse Mensuelle des Dépenses Clés (MAD)</h2>
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Mois</th>
+                            <th>Total (MAD)</th>
+                            <th>Café (MAD)</th>
+                            <th>Épiceries (MAD)</th>
+                            <th>Protéines (MAD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Données JSON générées par l'analyse Python des fichiers CSV
+        const rawData = [
+  {"MONTH":"2024-08","Total (MAD)":27863.3,"Café (MAD)":1720.0,"Épiceries (MAD)":14660.5,"Protéines (MAD)":10645.0},
+  {"MONTH":"2024-09","Total (MAD)":68673.5,"Café (MAD)":810.0,"Épiceries (MAD)":27941.5,"Protéines (MAD)":25080.5},
+  {"MONTH":"2024-10","Total (MAD)":46191.0,"Café (MAD)":3440.0,"Épiceries (MAD)":14952.0,"Protéines (MAD)":16075.0},
+  {"MONTH":"2024-11","Total (MAD)":43493.5,"Café (MAD)":3440.0,"Épiceries (MAD)":14003.5,"Protéines (MAD)":15550.0},
+  {"MONTH":"2024-12","Total (MAD)":50474.0,"Café (MAD)":3440.0,"Épiceries (MAD)":16892.5,"Protéines (MAD)":17670.0},
+  {"MONTH":"2025-01","Total (MAD)":71440.0,"Café (MAD)":0.0,"Épiceries (MAD)":28574.5,"Protéines (MAD)":21580.0},
+  {"MONTH":"2025-02","Total (MAD)":54659.5,"Café (MAD)":4591.0,"Épiceries (MAD)":23812.5,"Protéines (MAD)":14760.0},
+  {"MONTH":"2025-03","Total (MAD)":36961.5,"Café (MAD)":3340.0,"Épiceries (MAD)":12905.0,"Protéines (MAD)":13200.0},
+  {"MONTH":"2025-04","Total (MAD)":49261.5,"Café (MAD)":3975.0,"Épiceries (MAD)":17621.0,"Protéines (MAD)":16480.0},
+  {"MONTH":"2025-05","Total (MAD)":54174.0,"Café (MAD)":3610.0,"Épiceries (MAD)":22649.0,"Protéines (MAD)":15349.5},
+  {"MONTH":"2025-06","Total (MAD)":42818.0,"Café (MAD)":1780.0,"Épiceries (MAD)":14502.5,"Protéines (MAD)":15467.5},
+  {"MONTH":"2025-07","Total (MAD)":68007.5,"Café (MAD)":1780.0,"Épiceries (MAD)":26895.0,"Protéines (MAD)":17800.0},
+  {"MONTH":"2025-11","Total (MAD)":10350.0,"Café (MAD)":4060.0,"Épiceries (MAD)":3568.0,"Protéines (MAD)":1320.0},
+  {"MONTH":"2025-12","Total (MAD)":6337.0,"Café (MAD)":1980.0,"Épiceries (MAD)":1438.0,"Protéines (MAD)":1007.0}
+];
+        
+        // Préparation des données
+        const data = rawData.map(item => ({
+            month: item.MONTH,
+            total: item['Total (MAD)'] || 0, 
+            cafe: item['Café (MAD)'] || 0,
+            epiceries: item['Épiceries (MAD)'] || 0,
+            proteines: item['Protéines (MAD)'] || 0
+        }));
+
+        const labels = data.map(item => item.month);
+        const totalExpenses = data.map(item => item.total.toFixed(2));
+        const cafeExpenses = data.map(item => item.cafe.toFixed(2));
+
+        // Fonction pour formater un nombre en devise MAD
+        const formatCurrency = (number) => {
+            return parseFloat(number).toLocaleString('fr-FR', { 
+                style: 'currency', 
+                currency: 'MAD', 
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+
+        // --- Graphique 1: Dépenses Totales (Barres) ---
+        new Chart(document.getElementById('totalExpensesChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total des Dépenses (MAD)',
+                    data: totalExpenses,
+                    backgroundColor: 'rgba(73, 80, 87, 0.8)', // Dark Slate Grey
+                    borderColor: 'rgba(52, 58, 64, 1)',
+                    borderWidth: 1,
+                    hoverBackgroundColor: 'rgba(52, 58, 64, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Montant Total des Dépenses par Mois'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Montant (MAD)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- Graphique 2: Dépenses de Café (Ligne) ---
+        new Chart(document.getElementById('cafeExpensesChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Dépenses de Café (MAD)',
+                    data: cafeExpenses,
+                    backgroundColor: 'rgba(108, 117, 125, 0.4)', // Medium Grey semi-transparent
+                    borderColor: 'rgba(108, 117, 125, 1)',
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: 'rgba(108, 117, 125, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Évolution des Dépenses de Café par Mois'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Montant (MAD)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- Remplissage du Tableau ---
+        const tableBody = document.querySelector('#dataTable tbody');
+        data.forEach(item => {
+            const row = tableBody.insertRow();
+            row.insertCell().textContent = item.month;
+            row.insertCell().textContent = formatCurrency(item.total);
+            row.insertCell().textContent = formatCurrency(item.cafe);
+            row.insertCell().textContent = formatCurrency(item.epiceries);
+            row.insertCell().textContent = formatCurrency(item.proteines);
+        });
+
+    </script>
+</body>
+</html>
